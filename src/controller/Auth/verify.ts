@@ -24,7 +24,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             })
         }
 
-        let timOut = ((new Date().getTime() - checkConfirmCode.createdAt.getTime()) / 1000) > 60
+        let timOut = ((new Date().getTime() - checkConfirmCode.updatedAt.getTime()) / 1000) > 60
+        
+        let till_timout = (60 - ((new Date().getTime() - checkConfirmCode.updatedAt.getTime()) / 1000))
 
         if (timOut) {
 
@@ -47,6 +49,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         return res.status(200).json({
             message: `Welcome!`,
             is_active: true,
+            till_timout: Math.ceil(till_timout),
             user: getCreatedUser,
             token: jsontoken
         })

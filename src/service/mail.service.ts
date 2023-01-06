@@ -42,4 +42,14 @@ export class MailService {
         })
     }
 
+    resetVerifyCode = async (verificationId: string, newCode: number) => {
+        return await client.mailStore.update({
+            where: {
+                verificationId
+            },
+            data: {
+                code: newCode
+            }
+        })
+    }
 }
