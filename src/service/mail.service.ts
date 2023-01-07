@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const client = new PrismaClient()
+import { client } from "../imports"
 
 export class MailService {
 
@@ -29,7 +27,6 @@ export class MailService {
             }
         })
     }
-
     
     setMailState = async (id: number) => {
         await client.mailStore.update({
@@ -49,6 +46,14 @@ export class MailService {
             },
             data: {
                 code: newCode
+            }
+        })
+    }
+
+    deleteInActiveMails = async () => {
+        return await client.mailStore.deleteMany({
+            where: {
+                isActive: false
             }
         })
     }

@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const client = new PrismaClient()
+import { client } from "../imports"
 
 export class VerifyService {
 
@@ -10,7 +8,8 @@ export class VerifyService {
                 id: userId
             },
             data: {
-                is_verified: true
+                is_verified: true,
+                role: "User"
             }
         })
     }

@@ -1,16 +1,14 @@
-import { PrismaClient } from "@prisma/client";
-import { UserRegisterDto } from "../dtos"
-
-const client = new PrismaClient()
+import { client, UserRegisterDto } from "../imports"
 
 export class AuthService {
 
-    userRegister = async (data: UserRegisterDto ) => {
-        await client.user.create({
+    userRegister = async (data: UserRegisterDto ) => {        
+       await client.user.create({
             data: {
                 name: data.name,
                 email: data.email,
                 password: data.password,
+                verificationId: data.verificationId
             }
         })
     }
@@ -44,6 +42,13 @@ export class AuthService {
             }
         })
     }
-    
+
+    deleteInActiveUsers = async () => {
+        return await client.user.deleteMany({
+            where: {
+                is_verified: false
+            }
+        })
+    }
 }
 

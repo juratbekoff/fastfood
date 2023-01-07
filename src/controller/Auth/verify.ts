@@ -1,61 +1,90 @@
-import { MailService, VerifyService, AuthService } from "../../service/";
-import { Request, Response, NextFunction } from "express"
-import { VerifyDto } from "../../dtos";
-import jwt from 'jsonwebtoken'
-
-const mailService = new MailService()
-const verifyService = new VerifyService()
-const authService = new AuthService()
+import { 
+    verifyService, 
+    NextFunction, 
+    Request, 
+    Response, 
+    VerifyDto, 
+    authService, 
+    jwt, jwtConfig, 
+    mailService, messagesConfig 
+} from "../../imports/";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
     try {
 
+        // accepting data from request's body
         let data: VerifyDto = {
             verificationId: req.body.verificationId,
             code: req.body.code
         }
-        
-        let checkConfirmCode = await mailService.checkConirmCode(String(data.verificationId), +data.code)
-        
-        if (!checkConfirmCode) {            
+
+        // checking the user verified registreted
+        let isAlreadyRegistreted = await authService.findUserByVerifyId(data.verificationId)
+
+        // if has, return excisted
+        if(isAlreadyRegistreted?.is_verified) {
+            return res.status(403).json({
+                message: messagesConfig.alreadyExicted(isAlreadyRegistreted.email),
+                is_active: false
+            })
+        }
+        // checking entered confirm code for verify
+        let checkEnteredConfirmCode = await mailService.checkConirmCode(String(data.verificationId), +data.code)
+
+        // if become error, work if statement  
+        if (!checkEnteredConfirmCode) {            
             return res.status(403).send({
-                message: `Kiritilgan sms kodi notog'ri!`,
+                message: messagesConfig.wrongEnteredData,
                 is_active: false,
             })
         }
 
-        let timOut = ((new Date().getTime() - checkConfirmCode.updatedAt.getTime()) / 1000) > 60
-        
-        let till_timout = (60 - ((new Date().getTime() - checkConfirmCode.updatedAt.getTime()) / 1000))
+        // setting timout for verifying
+        let timOut = ((new Date().getTime() - checkEnteredConfirmCode.updatedAt.getTime()) / 1000) > 60
 
+        // the time untill finishing verifying
+        let till_timout = (60 - ((new Date().getTime() - checkEnteredConfirmCode.updatedAt.getTime()) / 1000))
+
+        // if time is up, if statement started below
         if (timOut) {
-
-            await mailService.setMailState(checkConfirmCode.id)
-
-            return res.status(403).send({
-                message: `Kod eskirgan, yangitdan ro'yxatdan o'tishni amalga oshiring!`,
-                is_active: false,
-            })
+            await mailService.setMailState(checkEnteredConfirmCode.id)
+                return res.status(403).send({
+                    message: messagesConfig.oldConfirmCode,
+                    is_active: false,
+                })
         }
 
-        const jsontoken = jwt.sign({ result: data }, 'qwert1', { expiresIn: "1y" })
+        // setting up jwt for registering
+        const jsontoken = jwt.sign({ result: data }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
 
+        // getting user from database for verifying
         let getCreatedUser = await authService.findUserByVerifyId(data.verificationId)
 
+        // if user has, operation will start into the if statement called getCreatedUser
         if (getCreatedUser) {
+
+            // in here, user verified by his ID
             await verifyService.verifyingUser(getCreatedUser.id)
+
+            // in here, deleted all inActive mails for cleaning database from trush
+            await mailService.deleteInActiveMails()
+
+            // in finally, returning response 200 OK
+            return res.status(200).json({
+                message: `Welcome!`,
+                is_active: true,
+                till_timout: Math.ceil(till_timout),
+                user: getCreatedUser,
+                token: jsontoken
+            })
         }
 
-        return res.status(200).json({
-            message: `Welcome!`,
-            is_active: true,
-            till_timout: Math.ceil(till_timout),
-            user: getCreatedUser,
-            token: jsontoken
+        // if none of the codes do not work above, returning final respone as an INternal Server Error!
+        return res.status(500).send({
+            messsage: messagesConfig.ISE
         })
     }
     catch (err) {
         next()
     }
 }
-
