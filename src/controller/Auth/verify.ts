@@ -7,7 +7,7 @@ import {
     authService, 
     jwt, jwtConfig, 
     mailService, messagesConfig 
-} from "../../imports/";
+} from "../../helpers/imports";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
     try {

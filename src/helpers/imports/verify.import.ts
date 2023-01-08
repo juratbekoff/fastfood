@@ -1,6 +1,6 @@
-import { MailService, VerifyService, AuthService } from "../service";
+import { MailService, VerifyService, AuthService } from "../../service";
 import { Request, Response, NextFunction } from "express"
-import { VerifyDto } from "../dtos";
+import { VerifyDto } from "../../dtos";
 import jwt from 'jsonwebtoken'
 import { jwtConfig, messagesConfig } from "../configs";
 

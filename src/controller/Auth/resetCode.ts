@@ -6,7 +6,7 @@ import {
     mailService, mailConfig,
     nodeMailer,
     messagesConfig
-} from "../../imports/";
+} from "../../helpers/imports";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -14,7 +14,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         // inital config for resend
         let { verificationId } = req.body
 
-        // generatin new code
+        // generating new code
         let newCode = Math.ceil(Math.random() * (9999 - 1000 + 1) + 1000)
 
         // finding user by verification ID
@@ -29,10 +29,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
         // nodemailer config
         let transporter = nodeMailer.createTransport({
-            host: 'smtp.gmail.com',
+            host: mailConfig.mailHost,
             port: 465,
             secure: true,
-            service: 'gmail',
+            service: mailConfig.mailService,
             auth: {
                 user: mailConfig.myMail,
                 pass: mailConfig.myPassword
@@ -43,7 +43,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         const mail_configs = {
             from: mailConfig.myMail,
             to: `${findUserByVerifyId.email}`,
-            subject: `Test sms!`,
+            subject: `${mailConfig.sendingMailSubject}`,
             text: `${newCode}`
         }
         // resend code to client!

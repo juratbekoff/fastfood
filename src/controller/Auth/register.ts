@@ -6,7 +6,7 @@ import {
     messagesConfig,
     UserRegisterDto,
     uuid, mailSender, Role
-} from "../../imports/";
+} from "../../helpers/imports";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -16,8 +16,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             password: req.body.password,
             verificationId: uuid()
         }
-        let isExicted = await authService.findUserByMail(userData.email)
-                
+
+        let isExicted = await authService.findUserByMail(userData.email)        
+        
         if (!isExicted) {
             // user registering
             await authService.userRegister(userData)
@@ -36,3 +37,4 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         next()
     }
 }
+

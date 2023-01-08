@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import api from "./api"
 
-import { serverConfig } from './configs'
+import { serverConfig } from './helpers/configs'
 
 const app = express()
 

@@ -6,7 +6,7 @@ import {
     nodeMailer, mailConfig, 
     UserRegisterDto, 
     mailService
-} from "../../imports/";
+} from "../../helpers/imports";
 
 export default async (req: Request, res: Response, next: NextFunction, userData: UserRegisterDto) => {
     try {
@@ -23,11 +23,11 @@ export default async (req: Request, res: Response, next: NextFunction, userData:
             }
         })
 
-        // sent direction config
+        // set direction config
         const mail_configs = {
             from: mailConfig.myMail,
             to: `${userData.email}`,
-            subject: `Testing SMS`,
+            subject: `${mailConfig.sendingMailSubject}`,
             text: `${Math.ceil(Math.random() * (9999 - 1000 + 1) + 1000)}`
         }
 

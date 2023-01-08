@@ -1,17 +1,22 @@
-import { client, UserRegisterDto } from "../imports"
-import { db_client } from "../db/connection"
+import { client, UserRegisterDto } from "../helpers/imports"
 
 export class AuthService {
 
     userRegister = async (data: UserRegisterDto) => {
-        await client.user.create({
-            data: {
-                name: data.name,
-                email: data.email,
-                password: data.password,
-                verificationId: data.verificationId
-            }
-        })
+        try {
+            
+           return await client.user.create({
+                data: {
+                    name: data.name,
+                    email: data.email,
+                    password: data.password,
+                    verificationId: data.verificationId
+                }
+            })
+        } catch (error) {
+            console.log(error);
+                throw error
+        }
     }
 
     findUserByMail = async (email: string) => {
@@ -21,7 +26,6 @@ export class AuthService {
             }
         })
     }
-
 
     findUserByVerifyId = async (verifyId: string) => {
         return await client.user.findFirst({
