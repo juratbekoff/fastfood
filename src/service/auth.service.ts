@@ -1,9 +1,10 @@
 import { client, UserRegisterDto } from "../imports"
+import { db_client } from "../db/connection"
 
 export class AuthService {
 
-    userRegister = async (data: UserRegisterDto ) => {        
-       await client.user.create({
+    userRegister = async (data: UserRegisterDto) => {
+        await client.user.create({
             data: {
                 name: data.name,
                 email: data.email,
@@ -11,6 +12,16 @@ export class AuthService {
                 verificationId: data.verificationId
             }
         })
+    }
+
+    userRegisterSQL = async (data: UserRegisterDto) => {
+        try {
+            const user = await db_client.query('INSERT INTO user (name, email, password, verificationId) VALUES ($1, $2, $3, $4)', [data])
+                return user.rows;
+        } catch (error: any) {
+            console.log('Error user registring!', error);
+            throw error;
+        }
     }
 
     findUserByMail = async (email: string) => {
