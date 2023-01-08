@@ -35,7 +35,7 @@ export default async (req: Request, res: Response, next: NextFunction, userData:
         transporter.sendMail(mail_configs, async function (error, info) {
             if (error) {
                 console.log(error);
-                return res.status(403).send({
+                res.status(403).send({
                     message: messagesConfig.sendMailerError
                 })
             }

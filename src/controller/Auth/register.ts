@@ -17,6 +17,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             verificationId: uuid()
         }
         let isExicted = await authService.findUserByMail(userData.email)
+                
         if (!isExicted) {
             // user registering
             await authService.userRegister(userData)
