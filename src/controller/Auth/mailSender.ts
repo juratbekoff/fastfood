@@ -5,7 +5,6 @@ import {
     messagesConfig,
     nodeMailer, mailConfig, 
     UserRegisterDto, 
-    mailService
 } from "../../helpers/imports";
 
 export default async (req: Request, res: Response, next: NextFunction, userData: UserRegisterDto) => {
@@ -41,13 +40,8 @@ export default async (req: Request, res: Response, next: NextFunction, userData:
             }
         })
 
-        // adding sms code to database
-        await mailService.addConfirmCode(Number(mail_configs.text), userData.verificationId)
-
-        // returning final response
-        return res.status(200).json({
-            message: messagesConfig.confirmCode,
-        })
+        return mail_configs;
+   
     } catch (error) {
         console.log(error);
         next()

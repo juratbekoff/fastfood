@@ -1,4 +1,4 @@
-import { client, UserRegisterDto } from "../helpers/imports"
+import { client, Role, UserRegisterDto } from "../helpers/imports"
 
 export class AuthService {
 
@@ -49,10 +49,32 @@ export class AuthService {
         })
     }
 
+    findUserForResend = async (verifyId: string) => {
+        return await client.user.findFirst({
+            where: {
+                verificationId: verifyId
+            },
+            select: {
+                name: true,
+                email: true,
+                password: true,
+                verificationId: true
+            }
+        })
+    }
+
     deleteInActiveUsers = async () => {
         return await client.user.deleteMany({
             where: {
                 is_verified: false
+            }
+        })
+    }
+
+    deleteUser = async (id: number) => {
+        return await client.user.delete({
+            where: {
+                id
             }
         })
     }

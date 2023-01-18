@@ -1,11 +1,11 @@
-import { 
-    NextFunction, 
-    Request, 
-    Response, 
-    authService, 
+import {
+    NextFunction,
+    Request,
+    Response,
+    authService,
     messagesConfig,
     UserRegisterDto,
-    uuid, mailSender, Role
+    uuid, mailSender, Role, mailService
 } from "../../helpers/imports";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
@@ -17,16 +17,26 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             verificationId: uuid()
         }
 
-        let isExicted = await authService.findUserByMail(userData.email)        
-        
-        if (!isExicted) {
+        let isExicted = await authService.findUserByMail(userData.email)
+
+        if (!isExicted || isExicted.role === Role.NOT_VERIFIED) {
+
+            if(isExicted) {
+                await authService.deleteUser(isExicted.id)
+            }
+            
             // user registering
             await authService.userRegister(userData)
-                return mailSender(req, res, next, userData)
+
+            let test = await mailSender(req, res, next, userData)
+
+            await mailService.addConfirmCode(Number(test?.text), userData.verificationId)
+
+            return res.status(200).json({
+                message: messagesConfig.confirmCode,
+            })
         }
-        if (isExicted?.role === Role.NOT_VERIFIED) {
-            return mailSender(req, res, next, userData)
-        }
+
         return res.status(403).send({
             message: messagesConfig.alreadyExicted(userData.email),
             is_active: false

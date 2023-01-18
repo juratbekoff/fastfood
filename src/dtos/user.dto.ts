@@ -1,5 +1,5 @@
 export interface UserRegisterDto {
-    name: string,
+    name: string | null,
     email: string,
     password: string,
     verificationId: string
