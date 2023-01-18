@@ -28,6 +28,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                 is_active: false
             })
         }
+
         // checking entered confirm code for verify
         let checkEnteredConfirmCode = await mailService.checkConirmCode(String(data.verificationId), +data.code)
 
@@ -63,13 +64,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         // if user has, operation will start into the if statement called getCreatedUser
         if (getCreatedUser) {
 
-            // in here, user verified by his ID
             await verifyService.verifyingUser(getCreatedUser.id)
 
-            // in here, deleted all inActive mails for cleaning database from trush
-            await mailService.deleteInActiveMails()
-
-            // in finally, returning response 200 OK
             return res.status(200).json({
                 message: `Welcome!`,
                 is_active: true,
@@ -79,12 +75,12 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             })
         }
 
-        // if none of the codes do not work above, returning final respone as an INternal Server Error!
         return res.status(500).send({
             messsage: messagesConfig.ISE
         })
     }
     catch (err) {
+        console.log(err);
         next()
     }
 }

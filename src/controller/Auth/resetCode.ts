@@ -11,7 +11,6 @@ import {
 export default async (req: Request, res: Response, next: NextFunction) => {
     try {
 
-        // inital config for resend
         let { verificationId } = req.body
 
         // finding user by verification ID
@@ -24,17 +23,16 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             })
         }
 
-        let test = await mailSender(req, res, next, findUserByVerifyId)
+        let mailsender = await mailSender(req, res, next, findUserByVerifyId)
 
         // adding resent code to database for next operations for litle time
-        await mailService.resetVerifyCode(verificationId, Number(test?.text) )
+        await mailService.resetVerifyCode(verificationId, Number(mailsender?.text) )
 
         // checking confirm code
         let checkConfirmCode = await mailService.checkConirmCodeStatus(verificationId)
 
-        // if has, return response
-        if (checkConfirmCode) {
-            
+        if (checkConfirmCode) {            
+
             // time remaining until expiration
             let till_timout = (60 - ((new Date().getTime() - checkConfirmCode.updatedAt.getTime()) / 1000))
 
@@ -52,33 +50,3 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-
-
-
-        // // nodemailer config
-        // let transporter = nodeMailer.createTransport({
-        //     host: mailConfig.mailHost,
-        //     port: 465,
-        //     secure: true,
-        //     service: mailConfig.mailService,
-        //     auth: {
-        //         user: mailConfig.myMail,
-        //         pass: mailConfig.myPassword
-        //     }
-        // })
-
-        // // sent direction config
-        // const mail_configs = {
-        //     from: mailConfig.myMail,
-        //     to: `${findUserByVerifyId.email}`,
-        //     subject: `${mailConfig.sendingMailSubject}`,
-        //     text: `${newCode}`
-        // }
-        // // resend code to client!
-        // transporter.sendMail(mail_configs, async function (error, info) {
-        //     if (error) {
-        //         console.log(error);
-        //         return res.send("error occured!")
-        //     }
-        //     console.log(info.response);
-        // })

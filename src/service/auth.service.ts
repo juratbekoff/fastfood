@@ -1,4 +1,4 @@
-import { client, Role, UserRegisterDto } from "../helpers/imports"
+import { client, UserRegisterDto } from "../helpers/imports"
 
 export class AuthService {
 

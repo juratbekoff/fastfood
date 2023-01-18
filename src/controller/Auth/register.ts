@@ -10,6 +10,7 @@ import {
 
 export default async (req: Request, res: Response, next: NextFunction) => {
     try {
+        
         let userData: UserRegisterDto = {
             name: req.body.name,
             email: req.body.email,
@@ -28,9 +29,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             // user registering
             await authService.userRegister(userData)
 
-            let test = await mailSender(req, res, next, userData)
+            let mailsender = await mailSender(req, res, next, userData)
 
-            await mailService.addConfirmCode(Number(test?.text), userData.verificationId)
+            if(!mailsender) return res.status(403).send({
+                message: `error occured in mailSender() part!`
+            })
+
+            await mailService.addConfirmCode(Number(mailsender.text), userData.verificationId)
 
             return res.status(200).json({
                 message: messagesConfig.confirmCode,
