@@ -12,16 +12,13 @@ import {
 export default async (req: Request, res: Response, next: NextFunction) => {
     try {
 
-        // accepting data from request's body
         let data: VerifyDto = {
             verificationId: req.body.verificationId,
             code: req.body.code
         }
 
-        // checking the user verified registreted
         let isAlreadyRegistreted = await authService.findUserByVerifyId(data.verificationId)
 
-        // if has, return excisted
         if(isAlreadyRegistreted?.is_verified) {
             return res.status(403).json({
                 message: messagesConfig.alreadyExicted(isAlreadyRegistreted.email),
@@ -29,10 +26,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             })
         }
 
-        // checking entered confirm code for verify
         let checkEnteredConfirmCode = await mailService.checkConirmCode(String(data.verificationId), +data.code)
 
-        // if become error, work if statement  
         if (!checkEnteredConfirmCode) {            
             return res.status(403).send({
                 message: messagesConfig.wrongEnteredData,
@@ -55,13 +50,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                 })
         }
 
-        // setting up jwt for registering
         const jsontoken = jwt.sign({ result: data }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
 
-        // getting user from database for verifying
         let getCreatedUser = await authService.findUserByVerifyId(data.verificationId)
 
-        // if user has, operation will start into the if statement called getCreatedUser
         if (getCreatedUser) {
 
             await verifyService.verifyingUser(getCreatedUser.id)
@@ -81,6 +73,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     }
     catch (err) {
         console.log(err);
-        next()
+        next(err)
     }
 }

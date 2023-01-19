@@ -46,7 +46,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     }
     catch (err) {
         console.log(err);
-        next()
+        next(err)
     }
 }
 

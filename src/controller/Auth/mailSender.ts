@@ -41,7 +41,7 @@ export default async (req: Request, res: Response, next: NextFunction, userData:
         })
 
         return mail_configs;
-   
+        
     } catch (err) {
         console.log(err);
         next()
