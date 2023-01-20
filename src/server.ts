@@ -4,14 +4,14 @@ import api from "./api"
 
 import { serverConfig } from './helpers/configs'
 
-const app = express()
+express()
+    .use(express.json())
+    .use(express.urlencoded({ extended: true }))
+    .use(cors())
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cors())
+    .use('/api', api )
 
-app.use('/api', api )
+    .listen(serverConfig.port, () => {
+        serverConfig.info()
+    })
 
-app.listen(serverConfig.port, () => {
-    console.log(`Server running on http://localhost:${serverConfig.port}`)
-})
