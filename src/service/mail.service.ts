@@ -1,4 +1,4 @@
-import { client } from "../helpers/imports"
+import { client } from "../imports"
 
 export class MailService {
 

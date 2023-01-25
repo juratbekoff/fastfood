@@ -6,7 +6,7 @@ import {
     mailService,
     messagesConfig,
     mailSender
-} from "../../helpers/imports";
+} from "../../imports";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import api from "./api"
 
-import { serverConfig } from './helpers/configs'
+import { serverConfig } from './configs'
 
 express()
     .use(express.json())
