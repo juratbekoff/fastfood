@@ -1,4 +1,4 @@
-import { SetMapsDto } from "../dtos"
+import { SetMapsDto } from "../types"
 
 export {
     SetMapsDto
