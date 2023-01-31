@@ -30,7 +30,7 @@ export default async (req: Request, res: Response, next: NextFunction, userData:
             text: `${Math.ceil(Math.random() * (9999 - 1000 + 1) + 1000)}`
         }
 
-        // sending sms to client!
+        // sending mail to client!
         transporter.sendMail(mail_configs, async function (error, info) {
             if (error) {
                 console.log(error);

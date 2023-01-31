@@ -23,7 +23,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  verificationId String 
+  verificationId String
 
   role Role @default(NOT_VERIFIED)
 }
