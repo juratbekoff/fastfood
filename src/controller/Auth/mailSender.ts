@@ -13,7 +13,7 @@ export default async (req: Request, res: Response, next: NextFunction, userData:
         // mail sender configuration
         let transporter = nodeMailer.createTransport({
             host: mailConfig.mailHost,
-            port: 465,
+            port: mailConfig.mailPort,
             secure: true,
             service: mailConfig.mailService,
             auth: {
